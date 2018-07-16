@@ -17,6 +17,7 @@
 package app.tivi.data.shows
 
 import app.tivi.data.entities.TiviShow
+import app.tivi.data.resultentities.RelatedShowEntryWithShow
 import app.tivi.extensions.fetchBodyWithRetry
 import com.uwetrottmann.trakt5.enums.Extended
 import com.uwetrottmann.trakt5.services.Shows
@@ -45,5 +46,20 @@ class TraktShowDataSource @Inject constructor(
             firstAired = traktShow.first_aired,
             _genres = traktShow.genres?.joinToString(",")
         )
+    }
+
+    override suspend fun getRelatedShows(showId: Long): List<RelatedShowEntryWithShow> {
+        val traktId = traktIdMapper.map(showId)!!
+
+        val results = showService.get().related(traktId.toString(), 0, 10, Extended.NOSEASONS)
+                .fetchBodyWithRetry()
+
+        val related = results.mapIndexed { index, relatedShow ->
+            // Now insert a placeholder for each show if needed
+
+        }
+
+        return emptyList()
+
     }
 }
